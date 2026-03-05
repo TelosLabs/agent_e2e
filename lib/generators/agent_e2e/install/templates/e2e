@@ -1,0 +1,54 @@
+#!/usr/bin/env sh
+set -e
+
+export PORT="${PORT:-3001}"
+export RAILS_ENV=test
+export BASE_URL="http://localhost:$PORT"
+
+cleanup() {
+  echo "==> Stopping server..."
+  kill $SERVER_PID 2>/dev/null
+  wait $SERVER_PID 2>/dev/null || true
+  lsof -ti:"$PORT" | xargs kill -9 2>/dev/null || true
+  echo "==> Resetting test database..."
+  RAILS_ENV=test bin/rails db:reset
+}
+trap cleanup EXIT
+
+echo "==> Killing any existing process on port $PORT..."
+lsof -ti:"$PORT" | xargs kill -9 2>/dev/null || true
+sleep 1
+
+echo "==> Preparing test database..."
+bin/rails db:test:prepare
+
+echo "==> Seeding test database..."
+bin/rails db:seed
+
+# Uncomment if your app needs asset precompilation (e.g. Tailwind CSS):
+# echo "==> Compiling assets..."
+# bin/rails tailwindcss:build
+# bin/rails assets:precompile
+
+echo "==> Starting test server on port $PORT..."
+bin/rails server -p "$PORT" &
+SERVER_PID=$!
+
+echo "==> Waiting for server..."
+WAIT=0
+MAX_WAIT=60
+until curl -sf -o /dev/null "http://localhost:$PORT" 2>/dev/null; do
+  WAIT=$((WAIT + 2))
+  if [ "$WAIT" -ge "$MAX_WAIT" ]; then
+    echo "==> ERROR: Server did not start within ${MAX_WAIT}s"
+    kill $SERVER_PID 2>/dev/null
+    exit 1
+  fi
+  printf "  waiting... (%ss)\n" "$WAIT"
+  sleep 2
+done
+sleep 3
+echo "==> Server ready!"
+
+echo "==> Running agent tests..."
+cd agent-tests && node agent.js
