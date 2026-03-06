@@ -42,7 +42,17 @@ end
 bundle install
 ```
 
-### Step 2: Run the install generator
+### Step 2: Set up your environment
+
+Add your OpenAI API key to your `.env` file in the Rails root:
+
+```env
+OPENAI_API_KEY=sk-proj-...
+```
+
+> **Important:** Make sure `.env` is in your `.gitignore` (Rails apps typically ignore `/.env*` by default). This key is needed both for the install generator (to generate test seeds) and for running the E2E tests.
+
+### Step 3: Run the install generator
 
 ```sh
 bin/rails generate agent_e2e:install
@@ -57,23 +67,11 @@ This will:
 5. Update `.gitignore` to exclude `node_modules`, `failures.md`, and `screenshots`
 6. Run `npm install` in `agent-tests/`
 7. Install the Chromium browser for Playwright
-8. **Generate `db/test_seeds.rb`** by analyzing your models with OpenAI (requires `OPENAI_API_KEY`)
+8. **Generate `db/test_seeds.rb`** by analyzing your models with OpenAI
 
-### Step 3: Set up your environment
+The generator reads all your models and `db/schema.rb`, then calls OpenAI to generate `db/test_seeds.rb` with realistic seed data for E2E testing — including a QA user (`qa@example.com` / `Password123!`), associated records, and proper handling of validations, enums, and Devise.
 
-Add your OpenAI API key to your `.env` file in the Rails root:
-
-```env
-OPENAI_API_KEY=sk-proj-...
-```
-
-> **Important:** Make sure `.env` is in your `.gitignore` (Rails apps typically ignore `/.env*` by default).
-
-### Step 4: Generate test seeds
-
-The install generator automatically analyzes all your models and `db/schema.rb`, then calls OpenAI to generate `db/test_seeds.rb` with realistic seed data for E2E testing — including a QA user, associated records, and proper handling of validations, enums, and Devise.
-
-If the API key wasn't available during install, or you want to regenerate seeds after adding new models, run:
+To regenerate seeds after adding new models:
 
 ```sh
 bin/rails generate agent_e2e:test_seeds
@@ -83,7 +81,7 @@ The generated file uses `find_or_create_by!` so it's safe to run multiple times.
 
 You can override the AI model used with the `SEED_AI_MODEL` environment variable (defaults to `o3`).
 
-### Step 5: Add `data-testid` attributes to your views
+### Step 4: Add `data-testid` attributes to your views
 
 The agent can interact with elements by visible text, labels, and roles — but `data-testid` attributes make interactions more reliable, especially for buttons and form elements.
 
@@ -95,7 +93,7 @@ The agent can interact with elements by visible text, labels, and roles — but 
 
 **Recommendation:** Add `data-testid` to every interactive element (buttons, links, inputs, selects). This doesn't affect your production HTML and makes tests much more stable.
 
-### Step 6: Handle asset compilation (if needed)
+### Step 5: Handle asset compilation (if needed)
 
 If your app uses Tailwind CSS, esbuild, or another build step, uncomment the relevant line in `bin/e2e`:
 
