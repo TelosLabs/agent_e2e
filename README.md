@@ -5,8 +5,8 @@ AI-powered end-to-end testing for Rails applications. An OpenAI agent drives a r
 Write tests like plain English:
 
 ```
-- Log in with qa@example.com, navigate to Settings, and change the display name to "Test User"
-- Register a new account, confirm the email via letter_opener, and verify the dashboard loads
+- Log in, navigate to Settings, and change the display name to "Test User"
+- Register a new account, confirm the email, and verify the dashboard loads
 - Search for "rails" and verify results appear
 ```
 
@@ -34,7 +34,7 @@ The agent reads the page, decides what to click/fill/navigate, and reports pass/
 ```ruby
 # Gemfile
 group :development, :test do
-  gem "agent_e2e"
+  gem "agent_e2e", git: "https://github.com/TelosLabs/agent_e2e.git"
 end
 ```
 
@@ -73,7 +73,7 @@ OPENAI_API_KEY=sk-proj-...
 Add a seed user for the agent to log in with. In `db/seeds.rb`:
 
 ```ruby
-if Rails.env.test? || Rails.env.development?
+if Rails.env.local?
   User.find_or_create_by!(email: "qa@example.com") do |user|
     user.password = "Password123!"
     user.password_confirmation = "Password123!"
@@ -112,7 +112,7 @@ Edit `agent-tests/tests.md`. Each line is a test case (lines starting with `#` a
 
 ```markdown
 # Authentication
-- Log in with qa@example.com and verify the home page loads
+- Log in and verify the home page loads
 - Try to log in with wrong@example.com / badpassword and verify an error message appears
 
 # Navigation
@@ -120,7 +120,7 @@ Edit `agent-tests/tests.md`. Each line is a test case (lines starting with `#` a
 - Use the search bar to search for "hello" and verify results appear
 
 # Email flows
-- Register a new account with test@example.com, go to /letter_opener to find the confirmation email, click the confirmation link, and verify the account is activated
+- Register a new account, click the confirmation link, and verify the account is activated
 
 # Mobile
 - On mobile viewport, open the hamburger menu and navigate to Settings
@@ -155,7 +155,7 @@ All configuration is via environment variables. Set them in `.env` or pass them 
 | Variable | Default | Description |
 |---|---|---|
 | `OPENAI_API_KEY` | *(required)* | Your OpenAI API key |
-| `AI_MODEL` | `gpt-4o` | OpenAI model to use for the agent |
+| `AI_MODEL` | `gpt-5.1` | OpenAI model to use for the agent |
 | `BASE_URL` | `http://localhost:3000` | Base URL of the app (overridden to port 3001 by `bin/e2e`) |
 | `MAX_STEPS` | `25` | Maximum steps per test before timeout |
 | `ACTION_TIMEOUT` | `8000` | Timeout in ms for each browser action |
