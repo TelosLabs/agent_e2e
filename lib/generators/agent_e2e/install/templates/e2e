@@ -11,7 +11,7 @@ cleanup() {
   wait $SERVER_PID 2>/dev/null || true
   lsof -ti:"$PORT" | xargs kill -9 2>/dev/null || true
   echo "==> Resetting test database..."
-  RAILS_ENV=test bin/rails db:reset
+  RAILS_ENV=test bin/rails db:drop
 }
 trap cleanup EXIT
 
@@ -51,4 +51,4 @@ sleep 3
 echo "==> Server ready!"
 
 echo "==> Running agent tests..."
-cd agent-tests && node agent.js
+(cd agent-tests && node agent.js)
