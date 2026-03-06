@@ -24,7 +24,26 @@ echo "==> Preparing test database..."
 bin/rails db:test:prepare
 
 echo "==> Seeding test database..."
-bin/rails db:seed
+if [ -f db/test_seeds.rb ]; then
+  bin/rails runner db/test_seeds.rb
+else
+  echo ""
+  echo "ERROR: db/test_seeds.rb not found."
+  echo ""
+  if grep -q "OPENAI_API_KEY" .env 2>/dev/null; then
+    echo "Next steps:"
+    echo "  Run the test seeds generator:"
+    echo "    bin/rails generate agent_e2e:test_seeds"
+  else
+    echo "Next steps:"
+    echo "  1. Add your OpenAI API key to .env:"
+    echo "     OPENAI_API_KEY=sk-..."
+    echo "  2. Run the test seeds generator:"
+    echo "     bin/rails generate agent_e2e:test_seeds"
+  fi
+  echo ""
+  exit 1
+fi
 
 # Uncomment if your app needs asset precompilation (e.g. Tailwind CSS):
 # echo "==> Compiling assets..."
