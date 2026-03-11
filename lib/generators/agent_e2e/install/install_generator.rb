@@ -106,6 +106,10 @@ module AgentE2e
         end
       end
 
+      def generate_test_seeds
+        generate "agent_e2e:test_seeds"
+      end
+
       def print_next_steps
         say ""
         say "=" * 60, :green
@@ -120,10 +124,12 @@ module AgentE2e
         say "  2. Add data-testid attributes to key UI elements:"
         say '     <button data-testid="submit-login">Log in</button>'
         say ""
-        say "  3. Create a QA seed user (e.g. in db/seeds.rb):"
-        say "     User.find_or_create_by!(email: 'qa@example.com') do |u|"
-        say "       u.password = 'Password123!'"
-        say "     end"
+        if File.exist?(File.join(destination_root, "db/test_seeds.rb"))
+          say "  3. Review the generated db/test_seeds.rb and adjust if needed."
+        else
+          say "  3. Generate test seeds:"
+          say "     bin/rails generate agent_e2e:test_seeds"
+        end
         say ""
         say "  4. Write test cases in agent-tests/tests.md (one per line):"
         say "     - Log in with qa@example.com and verify the dashboard loads"
