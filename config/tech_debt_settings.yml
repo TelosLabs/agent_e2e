@@ -1,11 +1,9 @@
 version: 1
 
-# For provider "github": use GITHUB_TOKEN (Actions) or a PAT with "models" scope (classic)
-# or "models: read" (fine-grained). Local testing requires a PAT; GITHUB_TOKEN only works in Actions.
 llm:
-  provider: "github"
-  model: "openai/gpt-4.1-mini"
-  api_key_env: "GITHUB_TOKEN"
+  provider: "openai"
+  model: "gpt-4o"
+  api_key_env: "OPENAI_API_KEY"
   max_tokens: 4096
   temperature: 0.2
 

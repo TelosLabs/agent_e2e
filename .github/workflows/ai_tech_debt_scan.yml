@@ -16,7 +16,6 @@ on:
 permissions:
   contents: read
   issues: write
-  models: read
 
 jobs:
   tech_debt_scan:
@@ -34,9 +33,10 @@ jobs:
       - name: Run AI tech debt collector
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
             bundle exec ruby bin/agent_debt_collector --dry-run
           else
-            bundle exec ruby bin/agent_debt_collector --dry-run
+            bundle exec ruby bin/agent_debt_collector
           fi
