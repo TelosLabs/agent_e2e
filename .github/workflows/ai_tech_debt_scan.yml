@@ -1,6 +1,9 @@
 name: AI Tech Debt Scan
 
 on:
+  push:
+    branches:
+      - feature/agent_debt_collector
   schedule:
     - cron: "0 6 * * 1"
   workflow_dispatch:
@@ -35,5 +38,5 @@ jobs:
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
             ruby bin/agent_debt_collector --dry-run
           else
-            ruby bin/agent_debt_collector
+            ruby bin/agent_debt_collector --dry-run
           fi
