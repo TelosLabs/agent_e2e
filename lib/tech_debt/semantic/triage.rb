@@ -23,16 +23,41 @@ module TechDebt
       private
 
       def parse_json(content)
-        parsed = JSON.parse(strip_code_fences(content))
+        raw = strip_code_fences(content)
+        parsed = JSON.parse(raw)
         return parsed if parsed.is_a?(Array)
 
         raise "LLM response was not an array"
       rescue JSON::ParserError => e
+        repaired = attempt_repair_truncated_json(raw, e)
+        return repaired if repaired
+
         raise "Unable to parse LLM JSON response: #{e.message}"
       end
 
       def strip_code_fences(content)
         content.gsub(/\A```(?:json)?\s*/m, "").gsub(/\s*```\z/m, "").strip
+      end
+
+      def attempt_repair_truncated_json(raw, error)
+        return nil unless error.message.include?("unexpected end of input")
+
+        # Truncation often leaves a trailing comma or incomplete object. Try to salvage.
+        # Find the last complete object (ends with "},\s*") and close the array.
+        if (idx = raw.rindex(/}\s*,\s*/m))
+          repaired = raw[0..idx] + "]"
+          parsed = JSON.parse(repaired)
+          return parsed if parsed.is_a?(Array)
+        end
+
+        # Fallback: last "}" at end of string (object boundary)
+        if (idx = raw.rindex(/}\s*\z/m))
+          repaired = raw[0..idx] + "]"
+          parsed = JSON.parse(repaired)
+          return parsed if parsed.is_a?(Array)
+        end
+
+        nil
       end
     end
   end
