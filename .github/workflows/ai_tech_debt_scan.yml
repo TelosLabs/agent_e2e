@@ -36,7 +36,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
-            ruby bin/agent_debt_collector --dry-run
+            bundle exec ruby bin/agent_debt_collector --dry-run
           else
-            ruby bin/agent_debt_collector --dry-run
+            bundle exec ruby bin/agent_debt_collector --dry-run
           fi
