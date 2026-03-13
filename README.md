@@ -1,6 +1,6 @@
 # Agent E2E
 
-AI-powered end-to-end testing for Rails applications. An OpenAI agent drives a real Chromium browser via Playwright to execute natural-language test cases against your running app.
+AI-powered end-to-end testing for Rails applications. An AI agent drives a real Chromium browser via Playwright to execute natural-language test cases against your running app. Works with OpenAI, Minimax, Ollama, and any OpenAI-compatible API.
 
 Write tests like plain English:
 
@@ -25,7 +25,7 @@ The agent reads the page, decides what to click/fill/navigate, and reports pass/
 
 - **Ruby** >= 3.1, **Rails** >= 7.0
 - **Node.js** >= 18
-- **OpenAI API key** (GPT-4o or newer recommended)
+- **AI API key** from any OpenAI-compatible provider (OpenAI, Minimax, Ollama, etc.)
 
 ## Installation
 
@@ -60,12 +60,21 @@ This will:
 
 ### Step 3: Set up your environment
 
-Add your OpenAI API key to your `.env` file in the Rails root:
+Add your AI provider API key to your `.env` file in the Rails root:
 
 ```env
-OPENAI_API_KEY=sk-proj-...
+AI_API_KEY=sk-proj-...
 ```
 
+For non-OpenAI providers, also set the base URL and model:
+
+```env
+AI_API_KEY=your-api-key
+AI_BASE_URL=https://api.minimax.chat/v1
+AI_MODEL=your-model-name
+```
+
+> **Note:** `OPENAI_API_KEY` is still supported as a fallback for existing setups.
 > **Important:** Make sure `.env` is in your `.gitignore` (Rails apps typically ignore `/.env*` by default).
 
 ### Step 4: Create a QA test user
@@ -154,8 +163,9 @@ All configuration is via environment variables. Set them in `.env` or pass them 
 
 | Variable | Default | Description |
 |---|---|---|
-| `OPENAI_API_KEY` | *(required)* | Your OpenAI API key |
-| `AI_MODEL` | `gpt-5.1` | OpenAI model to use for the agent |
+| `AI_API_KEY` | *(required)* | API key for your AI provider (`OPENAI_API_KEY` also supported) |
+| `AI_BASE_URL` | `https://api.openai.com/v1` | Base URL for the AI API (change for Minimax, Ollama, etc.) |
+| `AI_MODEL` | `gpt-4o` | Model to use for the agent |
 | `BASE_URL` | `http://localhost:3000` | Base URL of the app (overridden to port 3001 by `bin/e2e`) |
 | `MAX_STEPS` | `25` | Maximum steps per test before timeout |
 | `ACTION_TIMEOUT` | `8000` | Timeout in ms for each browser action |
@@ -166,8 +176,8 @@ All configuration is via environment variables. Set them in `.env` or pass them 
 ## How it works
 
 1. The agent reads the current page (visible text + interactive controls)
-2. Sends a snapshot to OpenAI with the test goal and action history
-3. OpenAI returns the next action (click, fill, navigate, etc.)
+2. Sends a snapshot to the AI provider with the test goal and action history
+3. The AI returns the next action (click, fill, navigate, etc.)
 4. The agent executes the action via Playwright
 5. Repeats until the goal is done, fails, or hits the step limit
 6. Loop detection aborts tests that get stuck cycling the same actions
