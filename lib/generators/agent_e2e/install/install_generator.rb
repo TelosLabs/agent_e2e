@@ -7,7 +7,7 @@ module AgentE2e
     class InstallGenerator < Rails::Generators::Base
       source_root File.expand_path("templates", __dir__)
 
-      desc "Sets up AI-powered E2E testing with Playwright, OpenAI, and letter_opener_web"
+      desc "Sets up AI-powered E2E testing with Playwright, an AI provider (OpenAI-compatible), and letter_opener_web"
 
       def copy_agent_test_files
         say "Creating agent-tests/ directory...", :green
@@ -114,8 +114,12 @@ module AgentE2e
         say ""
         say "Next steps:", :yellow
         say ""
-        say "  1. Add your OpenAI API key to .env:"
-        say "     OPENAI_API_KEY=sk-..."
+        say "  1. Add your AI provider API key to .env:"
+        say "     AI_API_KEY=sk-..."
+        say ""
+        say "     For non-OpenAI providers, also set:"
+        say "     AI_BASE_URL=https://api.your-provider.com/v1"
+        say "     AI_MODEL=your-model-name"
         say ""
         say "  2. Add data-testid attributes to key UI elements:"
         say '     <button data-testid="submit-login">Log in</button>'

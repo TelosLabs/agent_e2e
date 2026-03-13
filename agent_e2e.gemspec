@@ -8,9 +8,10 @@ Gem::Specification.new do |spec|
   spec.authors = ["Your Name"]
   spec.email = ["your@email.com"]
 
-  spec.summary = "AI-powered E2E testing for Rails using Playwright and OpenAI"
+  spec.summary = "AI-powered E2E testing for Rails using Playwright and any OpenAI-compatible API"
   spec.description = "Sets up an AI QA agent that drives a real browser with Playwright, " \
-                     "guided by OpenAI, to run natural-language E2E tests against your Rails app. " \
+                     "guided by any OpenAI-compatible API (OpenAI, Minimax, Ollama, etc.), " \
+                     "to run natural-language E2E tests against your Rails app. " \
                      "Includes letter_opener_web for email testing."
   spec.homepage = "https://github.com/your-org/agent_e2e"
   spec.license = "MIT"
